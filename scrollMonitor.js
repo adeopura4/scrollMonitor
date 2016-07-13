@@ -347,6 +347,8 @@
 	}
 
 	if (window.addEventListener) {
+		// Added the argument true so that the scrollEvent is always
+		// captured
 		window.addEventListener('scroll', scrollMonitorListener, true);
 		window.addEventListener('resize', debouncedRecalcuateAndTrigger);
 	} else {
