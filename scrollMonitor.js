@@ -65,13 +65,17 @@
 		exports.viewportTop = scrollTop();
 		exports.viewportBottom = exports.viewportTop + exports.viewportHeight;
 		exports.documentHeight = getDocumentHeight();
-		if (exports.documentHeight !== previousDocumentHeight) {
-			calculateViewportI = watchers.length;
-			while( calculateViewportI-- ) {
-				watchers[calculateViewportI].recalculateLocation();
-			}
-			previousDocumentHeight = exports.documentHeight;
+		// The original code would not recalculate the location
+		// unless there was a heigh change. This worked ok in the
+		// orignal code because they assumed the scroll with respect
+		// to the window. In our case, we are using the scroll
+		// in a container, so we need to perform this recomputation
+		// @see https://github.com/stutrek/scrollMonitor/issues/48
+		calculateViewportI = watchers.length;
+		while( calculateViewportI-- ) {
+			watchers[calculateViewportI].recalculateLocation();
 		}
+		previousDocumentHeight = exports.documentHeight;
 	}
 
 	function recalculateWatchLocationsAndTrigger() {
@@ -174,7 +178,10 @@
 			if (!this.isFullyInViewport && wasFullyInViewport) {
 				triggerCallbackArray( this.callbacks[PARTIALLYEXITVIEWPORT] );
 			}
-			if (!this.isInViewport && wasInViewport) {
+			
+			// Check for the initial condition so we can disable the 
+			// watchers for elements that are not in the viewport
+			if (!this.isInViewport && (wasInViewport || undefined === wasInViewport)) {
 				triggerCallbackArray( this.callbacks[EXITVIEWPORT] );
 			}
 			if (this.isInViewport !== wasInViewport) {
@@ -238,11 +245,11 @@
 
 		this.recalculateLocation();
 		this.update();
-
-		wasInViewport = this.isInViewport;
-		wasFullyInViewport = this.isFullyInViewport;
-		wasAboveViewport = this.isAboveViewport;
-		wasBelowViewport = this.isBelowViewport;
+		
+		// Let the original values of wasInViewport, wasBelowViewport, wasFullyInViewport
+		// and wasAboveViewport remain as their defaul values. This will allow us to
+		// make sure we do perform the appropriate enable / disable of watchers
+		// for elements that are in the viewport / not in the viewport
 	}
 
 	ElementWatcher.prototype = {
@@ -340,7 +347,9 @@
 	}
 
 	if (window.addEventListener) {
-		window.addEventListener('scroll', scrollMonitorListener);
+		// Added the argument true so that the scrollEvent is always
+		// captured
+		window.addEventListener('scroll', scrollMonitorListener, true);
 		window.addEventListener('resize', debouncedRecalcuateAndTrigger);
 	} else {
 		// Old IE support
