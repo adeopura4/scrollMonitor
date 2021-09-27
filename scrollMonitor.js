@@ -100,7 +100,9 @@
 
 		updateAndTriggerWatchersI = watchers.length;
 		while( updateAndTriggerWatchersI-- ) {
-			watchers[updateAndTriggerWatchersI].triggerCallbacks();
+			if (watchers[updateAndTriggerWatchersI]) {
+				watchers[updateAndTriggerWatchersI].triggerCallbacks();
+			}
 		}
 
 	}
@@ -178,8 +180,8 @@
 			if (!this.isFullyInViewport && wasFullyInViewport) {
 				triggerCallbackArray( this.callbacks[PARTIALLYEXITVIEWPORT] );
 			}
-			
-			// Check for the initial condition so we can disable the 
+
+			// Check for the initial condition so we can disable the
 			// watchers for elements that are not in the viewport
 			if (!this.isInViewport && (wasInViewport || undefined === wasInViewport)) {
 				triggerCallbackArray( this.callbacks[EXITVIEWPORT] );
@@ -245,7 +247,7 @@
 
 		this.recalculateLocation();
 		this.update();
-		
+
 		// Let the original values of wasInViewport, wasBelowViewport, wasFullyInViewport
 		// and wasAboveViewport remain as their defaul values. This will allow us to
 		// make sure we do perform the appropriate enable / disable of watchers
