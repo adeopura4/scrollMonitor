@@ -1,4 +1,7 @@
 {
-  "framework": "mocha+chai",
-  "test_page": "spec-runner/index.html"
+    "framework": "mocha+chai",
+    "src_files": [],
+    "footer_scripts": ["test/polyfills.js", "node_modules/sinon/pkg/sinon.js", "test/index.js"],
+
+    "launch_in_dev": ["phantomjs"]
 }

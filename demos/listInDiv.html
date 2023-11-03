@@ -6,11 +6,23 @@
 			padding: 0;
 			font-family: helvetica, arial, sans-serif;
 		}
+
+		#target {
+			position: absolute;
+			top: 0px;
+			left: 50px;
+			right: 50px;
+			bottom: 50px;
+			overflow: auto;
+			-webkit-overflow-scrolling: touch;
+		}
+
 		section {
 			padding: 60px 0 20px 0;
 			margin: 0;
 			position: relative;
 		}
+
 		h2 {
 			height: 29px;
 			padding: 10px;
@@ -22,7 +34,7 @@
 			left: 0;
 			right: 0;
 		}
-		
+
 		section.bottom h2 {
 			top: auto;
 			bottom: 0;
@@ -30,6 +42,7 @@
 		
 		section.fixed h2 {
 			position: fixed;
+			left: 50px;
 		}
 		
 		ul {
@@ -47,13 +60,16 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
 <script type="text/javascript">
 	requirejs(['../dist/umd/index.js'], function () {
+
 		$.getJSON('./listdata.json', function( data ) {
-			
+
+			var target = $('#target')[0];
+
 			// fill the document with HTML
 			var htmlBuffer = [];
 			$.each(data, function( type, beerMap ) {
 				htmlBuffer.push('<section><h2>'+type+'</h2><ul>');
-					
+
 				var breweries = Object.keys(beerMap);
 				breweries.sort();
 				breweries.forEach(function( brewery ) {
@@ -62,20 +78,22 @@
 				})
 				htmlBuffer.push('</li></section>');
 			});
-			$('#target').html(htmlBuffer.join(''));
-				
+			$(target).html(htmlBuffer.join(''));
+			var containerWatcher = scrollMonitor.createContainer(target);
+
 			// anchor the section header
 			var h2Height = $('h2').innerHeight();
-			
-			
+
+
+
 			$('section').each(function(index, section) {
-				
-				var sectionWatcher = scrollMonitor.create(section)
-				
-				var sectionMinusBottomHeadline = scrollMonitor.create(section, {bottom: -1*h2Height});
-				
+
+				var sectionWatcher = containerWatcher.create(section)
+
+				var sectionMinusBottomHeadline = containerWatcher.create(section, {bottom: -1*h2Height});
+
 				sectionMinusBottomHeadline.stateChange( function() {
-					
+
 					if (!sectionWatcher.isInViewport) {
 						section.className = '';
 					} else if (sectionMinusBottomHeadline.isInViewport && sectionMinusBottomHeadline.isAboveViewport) {
@@ -86,8 +104,8 @@
 						section.className = '';
 					}
 					
-				} )
-			})
+				} );
+			});
 			
 		});
 	});

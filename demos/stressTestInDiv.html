@@ -9,6 +9,15 @@
 			text-align: center;
 			margin: 20px;
 		}
+		#container {
+			position: absolute;
+			top: 200px;
+			bottom: 0;
+			left: 100px;
+			right: 100px;
+			overflow-y: auto;
+			-webkit-overflow-scrolling: touch;
+		}
 		#container span {
 			display: inline-block;
 			background-color: #ccc;
@@ -72,19 +81,22 @@
 <div id="counter"><div><div id="status">Rendering elements...</div><div id="progress_numbers"></div><progress></progress></div></div>
 <a href="https://github.com/stutrek/scrollMonitor"><img style="position: fixed; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
 <script type="text/javascript">
 	requirejs(['../dist/umd/index.js'], function () {
+
 		var count = parseInt(window.location.search.substr(1), 10) || 10000;
 		$('.fill-with-count').html(count);
 
-		var container = document.getElementById('container');
+		var containerEl = document.getElementById('container');
 		var counter = $('#progress_numbers')[0]
 		var progress = $('#counter progress')[0]
 
 		var frag = document.createDocumentFragment();
 		var i = 0;
 
+		var container = scrollMonitor.createContainer(containerEl);
 		var elements = [];
 
 		function draw() {
@@ -96,23 +108,24 @@
 				elements.push(el);
 
 				if ((i % 12345) === 0) {
-					container.appendChild(frag);
-					counter.innerHTML = (i)+' of '+count;
+					containerEl.appendChild(frag);
+					counter.innerHTML = (i) + ' of ' + count;
 					progress.value = i;
 					break;
 				}
 			}
 			if (i === count) {
-				container.appendChild(frag);
+				containerEl.appendChild(frag);
 				$(counter).remove();
 				$('#status').html('Calculating locations...');
 				progress.removeAttribute('value');
-				setTimeout(function() {
+				setTimeout(function () {
 					for (var i = 0; i < count; i++) {
-						var watcher = scrollMonitor.create(elements[i]);
+						var watcher = container.create(elements[i]);
 						watcher.on('stateChange', addClass);
 						addClass.call(watcher);
 					}
+					container.recalculateLocations();
 					$('#counter').remove();
 				}, 0);
 			} else {
@@ -133,11 +146,6 @@
 			} else if (this.isBelowViewport) {
 				this.watchItem.style.backgroundColor = '#ffc';
 			}
-		}
-		function makeWatcher( element ) {
-			var watcher = scrollMonitor.create( element );
-			watcher.stateChange(addClass);
-			addClass.call( watcher );
 		}
 	})
 

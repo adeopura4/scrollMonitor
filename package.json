@@ -1,63 +1,46 @@
 {
-  "name": "scrollmonitor",
-  "version": "1.0.12",
-  "author": "Stu Kabakoff <stukabakoff@gmail.com>",
-  "description": "A simple and fast API to monitor DOM elements as you scroll",
-  "contributors": [
-    {
-      "name": "Stu Kabakoff",
-      "email": "stukabakoff@gmail.com"
-    },
-    {
-      "name": "Terrence Lee",
-      "email": "mr.lee@terrenceishere.com"
-    },
-    {
-      "name": "Roman Kalyakin",
-      "email": "roman@kalyakin.com"
-    }
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/sakabako/scrollMonitor.git"
-  },
-  "keywords": [
-    "scroll",
-    "dom"
-  ],
-  "license": "MIT",
-  "main": "./scrollMonitor.js",
-  "dependencies": {},
-  "devDependencies": {
-    "karma": "^0.12.24",
-    "karma-chai": "^0.1.0",
-    "karma-expect": "^1.1.0",
-    "karma-firefox-launcher": "^0.1.3",
-    "karma-ie-launcher": "^0.1.5",
-    "karma-ios-launcher": "0.0.3",
-    "karma-mocha": "^0.1.9",
-    "karma-sinon-ie": "^1.0.1",
-    "browser-launcher": "^1.0.0",
-    "chai": "~1.8.1",
-    "mocha": "~1.14.0",
-    "sinon": "~1.7.3",
-    "sinon-chai": "~2.4.0",
-    "testem": "~0.6.15"
-  },
-  "testling": {
-    "browsers": [
-      "ie6..latest",
-      "firefox/latest",
-      "chrome/latest",
-      "opera/latest",
-      "safari/latest"
+    "name": "scrollmonitor",
+    "version": "1.2.11",
+    "author": "Stu Kabakoff <stukabakoff@gmail.com>",
+    "description": "A simple and fast API to monitor DOM elements as you scroll",
+    "contributors": [
+        {
+            "name": "Stu Kabakoff",
+            "email": "stukabakoff@gmail.com"
+        },
+        {
+            "name": "Terrence Lee",
+            "email": "mr.lee@terrenceishere.com"
+        },
+        {
+            "name": "Roman Kalyakin",
+            "email": "roman@kalyakin.com"
+        }
     ],
-    "harness": "mocha",
-    "files": [
-      "testling.js"
-    ]
-  },
-  "spm": {
-    "main": "scrollMonitor.js"
-  }
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/stutrek/scrollMonitor.git"
+    },
+    "keywords": [
+        "scroll",
+        "dom"
+    ],
+    "scripts": {
+        "test": "tsc testEntry.ts --outDir ./testOutput --module es6 && testem ci",
+        "start": "tsc testEntry.ts --outDir ./testOutput --module es6 && testem",
+        "build": "rm -rf dist; tsc; tsc --outDir ./dist/module --module es6"
+    },
+    "license": "MIT",
+    "main": "./dist/umd/index.js",
+    "module": "./dist/module/index.js",
+    "dependencies": {},
+    "devDependencies": {
+        "prettier": "^2.4.1",
+        "sinon": "^1.17.6",
+        "testem": "github:stutrek/testem",
+        "typescript": "^4.4.4"
+    },
+    "spm": {
+        "main": "scrollMonitor.js"
+    }
 }

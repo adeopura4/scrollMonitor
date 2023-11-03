@@ -2,35 +2,32 @@
 <head>
 	<style type="text/css">
 		body {
-			height: 10000px;
+			margin: 0;
+			padding: 0;
+		}
+		.whats-in {
+			position: fixed;
+			background: white;
+			padding: 10px;
+			top: 0;
+			left: 0;
 		}
 		span {
-			position: absolute;
-			top: 100px;
-			left: 100px;
-			width: 300px;
-			height: 200px;
-
+			display: block;
+			height: 100vh;
 			background-color: gray;
 		}
 		span.two {
-			left: 400px;
-			top: 1000px;
 			background-color: red;
 		}
 		span.three {
-			left: 700px;
-			top: 2000px;
 			background-color: blue;
-		}
-		span.fixed {
-			position: fixed;
-			top: 0;
 		}
 	​</style>
 </head>
 <body>
 <div>
+	<div class="whats-in"></div>
 	<span class="one">One!</span>
 	<span class="two">Two!</span>
 	<span class="three">Three!</span>
@@ -40,18 +37,24 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
 <script type="text/javascript">
 	requirejs(['../dist/umd/index.js'], function () {
-		var watchers = $('span').map(function(i, element) {
-
-			var watcher = scrollMonitor.create( element );
-
-			watcher.lock();
-
-			watcher.stateChange(function() {
-				$(element).toggleClass('fixed', this.isAboveViewport)
-			});
+		var watchers;
+		function update () {
+			var str = watchers.reduce(function (str, watcher) {
+				if (watcher.isInViewport) {
+					return str + ' ' + watcher.watchItem.innerHTML;
+				}
+				return str;
+			}, '');
+			$('.whats-in').html(str + ' is in the viewport');
+		}
+		watchers = $('span').toArray().map(function(element) {
+			var watcher = scrollMonitor.create(element);
+			watcher.stateChange(update);
 			return watcher;
 		});
-		console.log(watchers);
-	});
+
+		update();
+	})
+
 </script>
 </body>
